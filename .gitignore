@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+/db/romm.mv.db
+/db/romm.trace.db
