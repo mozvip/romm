@@ -1,0 +1,30 @@
+romm:
+  datFolder: d:\apps\romm\datroot
+  inputFolder: f:\ToSort\
+  outputFolder: f:\master\
+  unknownFolder: f:\unknown\
+
+  delete-extensions:
+    - avi
+    - bat
+    - dll
+    - exe
+    - glsl
+    - ini
+    - jpg
+    - mp3
+    - mp4
+    - png
+    - svg
+    - txt
+    - xml
+spring:
+  datasource:
+    username : SA
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:./db/romm
+#    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+#    url: jdbc:hsqldb:file:db/romm/
+
+  batch:
+    initialize-schema: always
