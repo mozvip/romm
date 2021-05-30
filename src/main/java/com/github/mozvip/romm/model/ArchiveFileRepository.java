@@ -36,10 +36,7 @@ public interface ArchiveFileRepository extends CrudRepository<ArchiveFile, Long>
     @Modifying
     Long deleteByDatPath(@Param("datPath") String datPath);
 
-    Collection<ArchiveFile> findBySha1AndMissingIsTrue(String sha1);
     List<ArchiveFile> findBySha1AndMissingIsFalse(String sha1);
-
-    void deleteByDatPathAndMissingIsTrue(String removedDatFile);
 
     Collection<ArchiveFile> findBySizeAndCrc32AndMissingIsTrue(long uncompressedSize, long crc);
     List<ArchiveFile> findBySizeAndCrc32AndMissingIsFalse(long uncompressedSize, long crc);
@@ -63,4 +60,9 @@ public interface ArchiveFileRepository extends CrudRepository<ArchiveFile, Long>
     @Query("UPDATE ARCHIVE_FILE SET MISSING=true, LAST_MODIFIED_DATE = NOW() WHERE ARCHIVE_FILE_ID=:id")
     @Modifying
     void setMissing(@Param("id") Long id);
+
+    @Query("SELECT DISTINCT ARCHIVE_FILE.ARCHIVE_PATH FROM ARCHIVE_FILE WHERE DAT_PATH=:datPath")
+    List<String> findDistinctArchivePath(@Param("datPath") String datPath);
+
+    List<ArchiveFile> findBySizeAndMissingIsTrue(long size);
 }

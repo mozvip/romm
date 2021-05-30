@@ -35,7 +35,7 @@ public class Romm {
     private final RommArchiveRepository rommArchiveRepository;
 
     private Set<String> removedDatFiles = new HashSet<>();
-    private Set<String> createdOutputFolders = new HashSet<>();
+    private boolean modifiedDatFiles = false;
 
     public Romm(RommProperties rommProperties, FileSystemService fs,
                 ArchiveFileRepository archiveFileRepository,
@@ -58,6 +58,10 @@ public class Romm {
         return rommProperties.getInputFolder();
     }
 
+    public Path getBadFolderArg() {
+        return rommProperties.getBadFolder();
+    }
+
     public Path getUnknownFolderArg() {
         return rommProperties.getUnknownFolder();
     }
@@ -70,12 +74,12 @@ public class Romm {
         this.removedDatFiles = removedDatFiles;
     }
 
-    public Set<String> getCreatedOutputFolders() {
-        return createdOutputFolders;
+    public boolean isModifiedDatFiles() {
+        return modifiedDatFiles;
     }
 
-    public void setCreatedOutputFolders(Set<String> createdOutputFolders) {
-        this.createdOutputFolders = createdOutputFolders;
+    public void setModifiedDatFiles(boolean modifiedDatFiles) {
+        this.modifiedDatFiles = modifiedDatFiles;
     }
 
     public void addToArchive(Path pathToArchiveFile, String relativePathInZipFile, InputStreamBuilder inputBuilder) throws IOException {
@@ -83,6 +87,7 @@ public class Romm {
         createOutputFolderIfMissing(pathToArchiveFile.getParent());
         final Semaphore semaphore = fs.lock(relativePath);
         try {
+            // FIXME: Zip output harcoded for now
             ZipParameters parameters = new ZipParameters();
             parameters.setFileNameInZip(relativePathInZipFile);
             try (InputStream input = inputBuilder.build()) {
@@ -103,6 +108,10 @@ public class Romm {
         addToArchive(pathToZip, relativePathInZipFile, () -> new ByteArrayInputStream(emptyFile));
     }
 
+    public Path getDestinationDatPath(String datPath) {
+        return getOutputFolderArg().resolve(datPath);
+    }
+
     public Path getDestinationArchivePath(ArchiveFile file) {
         return file.isFolder() ?
                 getOutputFolderArg().resolve(file.getArchivePath()) :
@@ -116,7 +125,6 @@ public class Romm {
     private void createOutputFolderIfMissing(Path outputFolder) throws IOException {
         if (!Files.isDirectory(outputFolder)) {
             Path relativePath = getOutputFolderArg().relativize(outputFolder);
-            createdOutputFolders.add(relativePath.toString());
             Files.createDirectories(outputFolder);
         }
     }
@@ -154,7 +162,6 @@ public class Romm {
             }
             archiveFileRepository.setNotMissing(file.getArchiveFileId());
         } else {
-            // FIXME: Zip output harcoded for now
             if (inputStreamBuilder != null) {
                 addToArchive(destinationGameFile, file.getFilePath(), inputStreamBuilder);
             } else {

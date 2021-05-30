@@ -3,6 +3,7 @@ romm:
   inputFolder: f:\ToSort\
   outputFolder: f:\master\
   unknownFolder: f:\unknown\
+  badFolder: f:\unknown\bad\
 
   delete-extensions:
     - avi

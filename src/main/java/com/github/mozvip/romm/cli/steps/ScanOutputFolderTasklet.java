@@ -67,7 +67,7 @@ public class ScanOutputFolderTasklet implements Tasklet {
                     String pathWithoutExtension = archivePath.substring(0, archivePath.lastIndexOf('.'));
                     final Collection<? extends ArchiveFile> expectedFiles = archiveFileRepository.findByArchivePath(pathWithoutExtension);
                     if (expectedFiles == null || expectedFiles.isEmpty()) {
-                        log.warn("File {} is not expected at this location", path.toString());
+                        log.warn("File {} is not expected at this location", path);
                     } else {
                         final List<? extends ArchiveFile> missingFiles = expectedFiles.stream().filter((ArchiveFile::isMissing)).collect(Collectors.toList());
                         if (!missingFiles.isEmpty()) {

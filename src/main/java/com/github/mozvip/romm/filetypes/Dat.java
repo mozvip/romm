@@ -32,11 +32,12 @@ public class Dat implements Serializable {
     }
 
     public void addGame(DatGame game) {
-        if (gameMap.containsKey(game.getName())) {
-            log.error("Dat file {} contains duplicate game {}", this.name, game.getName());
+        final String gameId = game.getRelativePath().toString();
+        if (gameMap.containsKey(gameId)) {
+            log.error("Dat file {} contains duplicate game {}", this.name, gameId);
         } else {
             games.add(game);
-            gameMap.put(game.getName(), game);
+            gameMap.put(gameId, game);
         }
     }
 
@@ -72,7 +73,7 @@ public class Dat implements Serializable {
                     if (name.endsWith(".zip")) {
                         name = name.substring(0, name.lastIndexOf('.'));
                     }
-                    currentGame = new DatGame(name);
+                    currentGame = new DatGame(null, name);
                 } else if (line.startsWith("file ") || line.startsWith("rom ")) {
                     assert currentGame != null;
                     String fileData = line.substring(line.indexOf('(') + 1, line.lastIndexOf(')')).trim();

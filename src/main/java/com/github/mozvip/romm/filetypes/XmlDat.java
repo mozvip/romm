@@ -47,25 +47,32 @@ public class XmlDat extends Dat {
 
                 DatGame currentArchive = null;
                 DatFile currentArchiveFile;
+                String currentSoftwareList = null;
+
                 while (xmlsr.hasNext()) {
                     eventType = xmlsr.next();
                     if (eventType == XMLStreamConstants.START_ELEMENT) {
                         final String element = xmlsr.getName().toString();
                         switch (element) {
+                            case "softwarelists":
                             case "datafile":
                             case "mame":
                                 dat = new XmlDat();
+                                break;
+                            case "softwarelist":
+                                currentSoftwareList = xmlsr.getAttributeValue(null, "name");
                                 break;
                             case "name":
                                 dat.setName(xmlsr.getElementText());
                                 break;
                             case "machine":
+                            case "software":
                             case "game":
                                 String name = xmlsr.getAttributeValue(null, "name");
                                 String cloneof = xmlsr.getAttributeValue(null, "cloneof");
                                 String romof = xmlsr.getAttributeValue(null, "romof");
 
-                                currentArchive = new DatGame(name);
+                                currentArchive = new DatGame(currentSoftwareList, name);
                                 dat.addGame(currentArchive);
                                 break;
                             case "rom":

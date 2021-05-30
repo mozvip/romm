@@ -12,6 +12,7 @@ public class RommProperties {
     private Path inputFolder;
     private Path outputFolder;
     private Path unknownFolder;
+    private Path badFolder;
 
     public Set<String> getDeleteExtensions() {
         return deleteExtensions;
@@ -51,5 +52,13 @@ public class RommProperties {
 
     public void setUnknownFolder(Path unknownFolder) {
         this.unknownFolder = unknownFolder;
+    }
+
+    public Path getBadFolder() {
+        return badFolder;
+    }
+
+    public void setBadFolder(Path badFolder) {
+        this.badFolder = badFolder;
     }
 }

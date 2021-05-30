@@ -76,6 +76,10 @@ public class FindRomsInCollectionTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
+        if (!romm.isModifiedDatFiles()) {
+            return RepeatStatus.FINISHED;
+        }
+
         final long haveFileCount = archiveFileRepository.countByMissingIsFalse();
         if (haveFileCount == 0) {
             // only execute this step if we actually have some non-missing files
@@ -85,8 +89,9 @@ public class FindRomsInCollectionTasklet implements Tasklet {
         // first pass, try to locate whole archives with contentSignatureSha1
         final List<RommArchive> missingRommArchives = rommArchiveRepository.findMissingFromCollectionBySignature();
         for (RommArchive missingRommArchive : missingRommArchives) {
-            final List<RommArchive> otherRommArchives = rommArchiveRepository.findByContentSignatureSha1AndArchivePathNotAndStatus(missingRommArchive.getContentSignatureSha1(), missingRommArchive.getArchivePath(), ArchiveStatus.COMPLETE.name());
-            final Path sourceFile = romm.getDestinationArchivePath(otherRommArchives.get(0).getArchivePath());
+            final List<RommArchive> completeArchives = rommArchiveRepository.findByContentSignatureSha1AndArchivePathNotAndStatus(missingRommArchive.getContentSignatureSha1(), missingRommArchive.getArchivePath(), ArchiveStatus.COMPLETE.name());
+            final RommArchive completeArchive = completeArchives.get(0);
+            final Path sourceFile = romm.getDestinationArchivePath(completeArchive.getArchivePath());
             romm.copyInputFileToOutput(sourceFile, missingRommArchive);
         }
 

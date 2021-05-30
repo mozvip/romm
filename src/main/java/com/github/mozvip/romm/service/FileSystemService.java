@@ -49,6 +49,9 @@ public class FileSystemService {
     }
 
     public void deleteFolderIfEmpty(Path folder, Path untilRoot) throws IOException {
+        if (folder.equals(untilRoot)) {
+            return;
+        }
         boolean empty = true;
         try (DirectoryStream<Path> ds = Files.newDirectoryStream(folder)) {
             for (Path d : ds) {
@@ -58,11 +61,13 @@ public class FileSystemService {
         }
         if (empty) {
             log.info("Deleting empty folder {}", folder);
-            Files.delete(folder);
-            if (!folder.getParent().equals(untilRoot)) {
-                deleteFolderIfEmpty(folder.getParent(), untilRoot);
-            }
+            deleteSinglePath(folder);
+            deleteFolderIfEmpty(folder.getParent(), untilRoot);
         }
     }
 
+    public void deleteSinglePath(Path pathToDelete) throws IOException {
+        pathToDelete.toFile().setWritable(true);
+        Files.delete(pathToDelete);
+    }
 }

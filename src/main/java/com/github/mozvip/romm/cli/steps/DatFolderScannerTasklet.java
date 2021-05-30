@@ -73,6 +73,7 @@ public class DatFolderScannerTasklet implements Tasklet {
                                     // no update since last time we read this file
                                     log.debug("Dat file {} already in cache", datPath);
                                 } else {
+                                    romm.setModifiedDatFiles(true);
                                     loadDatFileFromPath(path);
                                 }
                             } catch (Exception e) {
@@ -103,10 +104,10 @@ public class DatFolderScannerTasklet implements Tasklet {
         List<ArchiveFile> datArchives = new ArrayList<>();
         for (DatGame game : games) {
             if (game.getArchiveFiles().isEmpty()) {
-                log.warn("Archive {} in dat {} has no files, ignoring", game.getName(), dat.getName());
+                log.warn("Archive {} in dat {} has no files, ignoring", game.getRelativePath(), dat.getName());
                 continue;
             }
-            final String archivePath = relativeFolder.resolve(game.getPath()).toString();
+            final String archivePath = relativeFolder.resolve(game.getRelativePath()).toString();
             List<ArchiveFile> archiveFiles = new ArrayList<>();
             for (DatFile file : game.getArchiveFiles().values()) {
                 ArchiveFile archiveFile = new ArchiveFile();
@@ -134,7 +135,6 @@ public class DatFolderScannerTasklet implements Tasklet {
         archiveFileRepository.saveAll(datArchives);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
     public void scanDatFolder() throws IOException, InterruptedException {
         Set<String> distinctDatPath = archiveFileRepository.findDistinctDatPath();
         missingDats.addAll(distinctDatPath);
